@@ -1,9 +1,41 @@
 import matplotlib.pyplot as plt
 import tkinter as tk
-#import Perceptron_And as p_AND
-#import Perceptron_Or as p_OR
+import numpy as np
+import Perceptron as p
 
-plt.plot()
+#Abrimos el archivo de texto para tomar los inputs
+with open('inputs.txt') as f:
+    lines = f.readlines()
 
+p.setInputs(lines)
 
+w1 = float(input("W1: "))
+w2 = float(input("W2: "))
+theta = float(input("Theta: "))
+
+p.setValues(w1,w2,theta)
+
+F_u, X, m, b = p.ActivationFunc()
+
+#Plano cartesiano
+ejeX = np.arange(-2, 3, 1)
+ejeY = np.arange(-2, 3, 1)
+zeros = [0,0,0,0,0]
+plt.plot(ejeX, zeros, 'k')
+plt.plot(zeros, ejeY, 'k')
+
+for i in range(len(X)):
+    if F_u[i]:
+        plt.plot(X[i][0],X[i][1],'og')
+    else:
+        plt.plot(X[i][0],X[i][1],'or')
+
+#Linea de la pendiente
+x = [X[0][0],X[1][0],X[2][0],X[3][0]]
+plt.plot(x, np.dot(x,m) + b, 'b')
+
+#Imprimir la grafica
+plt.xlabel('x1')
+plt.ylabel('x2')
+plt.title('Perceptron')
 plt.show()
