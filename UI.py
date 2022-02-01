@@ -1,7 +1,31 @@
 import matplotlib.pyplot as plt
-import tkinter as tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from tkinter import *
 import numpy as np
 import Perceptron as p
+
+fig, ax= plt.subplots(facecolor='#8D96DA')
+
+#Plano cartesiano
+ejeX = np.arange(-2, 3, 1)
+ejeY = np.arange(-2, 3, 1)
+zeros = [0,0,0,0,0]
+ax.plot(ejeX, zeros, 'k')
+ax.plot(zeros, ejeY, 'k')
+
+mainwindow = Tk()
+mainwindow.geometry('650x650')
+mainwindow.wm_title('Perceptron')
+
+frame = Frame(mainwindow, bg='white', bd=3)
+frame.pack(expand=1, fill='both')
+
+canvas = FigureCanvasTkAgg(fig, master = frame)
+canvas.draw()
+canvas.get_tk_widget().pack(padx=5, pady=5, expand=1, fill='both')
+
+mainwindow.mainloop()
+
 
 #Abrimos el archivo de texto para tomar los inputs
 with open('inputs.txt') as f:
@@ -16,13 +40,6 @@ theta = float(input("Theta: "))
 p.setValues(w1,w2,theta)
 
 F_u, X, m, b = p.ActivationFunc()
-
-#Plano cartesiano
-ejeX = np.arange(-2, 3, 1)
-ejeY = np.arange(-2, 3, 1)
-zeros = [0,0,0,0,0]
-plt.plot(ejeX, zeros, 'k')
-plt.plot(zeros, ejeY, 'k')
 
 for i in range(len(X)):
     if F_u[i]:

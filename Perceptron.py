@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 Theta = 0
 W = []
@@ -36,8 +35,6 @@ def ActivationFunc():
     global X
     global m
     global b
-
     F_u = np.dot(X,W)-Theta >= 0
-
     return F_u, X, m, b
     
