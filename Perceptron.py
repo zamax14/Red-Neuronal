@@ -1,5 +1,6 @@
 import numpy as np
 
+#Inicializamos las variables
 Theta = 0
 W = []
 X = []
@@ -16,7 +17,7 @@ def setValues(w1, w2, theta):
     Theta = theta
     W = [w1, w2]
 
-    #Calculamos la pendiente
+    #Calculamos los valores de m y b para la pendiente
     m = -W[0]/W[1]
     b = Theta/W[1]
 
@@ -35,6 +36,8 @@ def ActivationFunc():
     global X
     global m
     global b
+    #Generamos el vector F(u) con true y false
     F_u = np.dot(X,W)-Theta >= 0
+    #Retornamos f(u), los valores de X, m y b
     return F_u, X, m, b
     
