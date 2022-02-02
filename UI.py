@@ -34,9 +34,8 @@ def update_graphic():
         else:
             ax.plot(X[i][0],X[i][1],'or')
 
-    #Linea de la pendiente
-    x = [X[0][0],X[1][0],X[2][0],X[3][0]]
-    ax.plot(x, np.dot(x,m) + b, 'b')
+    #Linea de la pendiente entre el primer punto y el ultimo
+    plt.axline((X[0][0], (X[0][0]*m)+b), (X[3][0], (X[3][0]*m)+b), color='b')
     
     #Imprimimos la grafica
     show_graphic()
