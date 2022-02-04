@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import *
-import numpy as np
 import Perceptron as p
 
 def print_axis():
@@ -30,12 +29,14 @@ def update_graphic():
         #Si la funcion f(u) da 1, entonces el punto se imprime de color verde
         #En caso contrario será rojo
         if F_u[i]:
+            ax.text(X[i][0],X[i][1], ' ('+str(X[i][0])+'-'+str(X[i][1])+')')
             ax.plot(X[i][0],X[i][1],'og')
         else:
+            ax.text(X[i][0],X[i][1], ' ('+str(X[i][0])+'-'+str(X[i][1])+')')
             ax.plot(X[i][0],X[i][1],'or')
 
-    #Linea de la pendiente entre el primer punto y el ultimo
-    plt.axline((X[0][0], (X[0][0]*m)+b), (X[3][0], (X[3][0]*m)+b), color='b')
+    #Coloca una linea a partir de un punto dado y la pendiente
+    plt.axline((X[0][0], (X[0][0]*m)+b), slope=m, color='b')
     
     #Imprimimos la grafica
     show_graphic()

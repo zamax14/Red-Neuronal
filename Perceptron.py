@@ -17,7 +17,7 @@ def setValues(w1, w2, theta):
     Theta = theta
     W = [w1, w2]
 
-    #Calculamos los valores de m y b para la pendiente
+    #Calculamos los valores de m y b
     m = -W[0]/W[1]
     b = Theta/W[1]
 
@@ -25,7 +25,7 @@ def setInputs(lines):
     global X
     #Llenamos la matriz X con lo que se tomó del archivo
     for line in lines:
-        vector = line.rstrip("\n").split(' ')
+        vector = line.split(' ')
         vector[0] = int(vector[0])
         vector[1] = int(vector[1])
         X.append(vector)
