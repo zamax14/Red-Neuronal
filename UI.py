@@ -44,20 +44,25 @@ def print_line():
     #Coloca una linea a partir de un punto dado y la pendiente
     plt.axline((X[0][0], (X[0][0]*m)+b), slope=m, color='b')
     canvas.draw()
+
+def clean_screen():
+    global X
+    ax.cla()
+    print_axis()
+    canvas.draw()
+    X = []
     
 
 #Inizializamos la grafica de matplotlib
 fig, ax= plt.subplots(facecolor='#8D96DA')
 fig.canvas.mpl_connect('button_press_event', plot_point)
 
-#Inicializamos la ventana y los valores de los pesos y theta
-w1 = w2 = theta = 0.0
 print_axis()
 
 mainwindow = Tk()
 mainwindow.geometry('650x650')
 mainwindow.wm_title('Perceptron')
-#Limpiamos los valores de los pesos y theta
+#Creamos los valores de los pesos y humbral de activacion 
 w1 = StringVar(mainwindow, 0)
 w2 = StringVar(mainwindow, 0)
 theta = StringVar(mainwindow, 0)
@@ -76,6 +81,7 @@ Label(mainwindow, text='Theta', width=10).pack(pady=5, side='left', expand=1)
 Entry(mainwindow, width=15, textvariable=theta).pack(pady=5, side='left', expand=1)
 
 Button(mainwindow, text='Go!', width=10, command=print_line).pack(pady=5, side='left', expand=1)
+Button(mainwindow, text='Clean', width=10, command=clean_screen).pack(pady=5, side='left', expand=1)
 
 #Mostramos la interfaz
 mainwindow.mainloop()
