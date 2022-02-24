@@ -31,13 +31,13 @@ def plot_point(event):
 def print_axis():
     global ax
     #Imprimimos los ejes del plano cartesiano
-    ejeX = [-2,2]
-    ejeY = [-2,2]
+    ejeX = [-5,5]
+    ejeY = [-5,5]
     zeros = [0,0]
     ax.plot(ejeX, zeros, 'k')
     ax.plot(zeros, ejeY, 'k')
-    plt.xlim(-2,2)
-    plt.ylim(-2,2)
+    plt.xlim(-5,5)
+    plt.ylim(-5,5)
 
 def ActivationFunc():
     global w1, w2, theta
@@ -49,10 +49,10 @@ def ActivationFunc():
 def print_line():
     global w1, w2, theta, eta, epoch_inter, X, d
 
-    epoch = int(epoch_inter.get())
+    epoch = 1
     error = True
 
-    while epoch and error:
+    while epoch<=int(epoch_inter.get()) and error:
         error = False
         for i in range(len(X)):
             Y = np.dot(X[i],[w1,w2])-theta >= 0
@@ -85,8 +85,9 @@ def print_line():
         W1_label.config(text="W1: {:.4f}".format(w1))
         W2_label.config(text="W2: {:.4f}".format(w2))
         Theta_label.config(text="Theta: {:.4f}".format(theta))
+        Epoch_label.config(text="Num. Epoch: "+str(epoch))
           
-        epoch-=1
+        epoch+=1
 
         canvas.draw()
 
@@ -97,13 +98,18 @@ def clean_screen():
     ax.cla()
     print_axis()
     canvas.draw()
+    w1 = random.random()
+    w2 = random.random()
+    theta = random.random()
+    W1_label.config(text="W1: {:.4f}".format(w1))
+    W2_label.config(text="W2: {:.4f}".format(w2))
+    Theta_label.config(text="Theta: {:.4f}".format(theta))
+
     
 
 #Inizializamos la grafica de matplotlib
 fig, ax= plt.subplots(facecolor='#8D96DA')
 fig.canvas.mpl_connect('button_press_event', plot_point)
-plt.xlim(-2,2)
-plt.ylim(-2,2)
 print_axis()
 
 mainwindow = Tk()
