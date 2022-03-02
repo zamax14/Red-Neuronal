@@ -8,6 +8,7 @@ import threading
 X = []
 d = []
 good_or_bad = True
+func_value = 2
 
 def change_color():
     global good_or_bad
@@ -25,7 +26,10 @@ def plot_point(event):
         d.append(1)
         ax.plot(ix,iy, '.g')
     else:
-        d.append(0)
+        if func_value == 0:
+            d.append(0)
+        else:
+            d.append(-1)
         ax.plot(ix,iy, '.r')
     canvas.draw()
 
@@ -37,30 +41,56 @@ def print_axis():
     zeros = [0,0]
     ax.plot(ejeX, zeros, 'k')
     ax.plot(zeros, ejeY, 'k')
-    plt.xlim(-5,5)
-    plt.ylim(-5,5)
+    plt.xlim(-1,1)
+    plt.ylim(-1,1)
 
-def ActivationFunc():
-    global w1, w2, theta
+def ActivationFunc(X):
+    global w1, w2, theta, func_value, a
 
     v = np.dot(X,[w1,w2])-theta
-    F_u =  1/(1+np.exp(-(float(a.get()))*v))
+
+    if func_value == 0:
+        #Sigmoidal
+        F_u = 1/(1+np.exp(-(float(a.get()))*v))
+
+    elif func_value == 1:
+        #Tangente hiperbolica
+        F_u = np.tanh(v)
+    
+    elif func_value == 2:
+        #Lineal
+        F_u = float(a.get())*v
+
+    return F_u
+
+def ActivationFuncDerivated(Y):
+    global func_value, a
+
+    if func_value == 0:
+        #Sigmoidal
+        F_u = float(a.get())*Y*(1-Y)
+
+    elif func_value == 1:
+        #Tangente hiperbolica
+        F_u = 1-(Y**2)
+    
+    elif func_value == 2:
+        #Lineal
+        F_u = float(a.get())
 
     return F_u
 
 def print_line():
     global w1, w2, theta, eta, epoch_inter, X, d, a
 
-    epoch = 1
     e = [1]
     
-    while np.average(np.power(e,2)) > 0.001:
+    while np.average(np.power(e,2)) > 0.1:
         e = []
         for i in range(len(X)):
-            v = np.dot(X[i],[w1,w2])-theta
-            Y = 1/(1+np.exp(-(float(a.get()))*v))
+            Y = ActivationFunc(X[i])
             e.append(d[i]-Y)
-            y_prima = float(a.get())*Y*(1-Y)
+            y_prima = ActivationFuncDerivated(Y)
             w1 = w1 + (float(eta.get())*e[-1]*y_prima*X[i][0])
             w2 = w2 + (float(eta.get())*e[-1]*y_prima*X[i][1])
             theta = theta - (float(eta.get())*e[-1]*y_prima)
@@ -72,10 +102,10 @@ def print_line():
         Y=[]
         m=-w1/w2
         b=theta/w2
-        Y = ActivationFunc()
+        Y = ActivationFunc(X)
         #Imprimimos los puntos en la grafica
         for i in range(len(X)):
-            if Y[i]>=0.5:
+            if Y[i]>=0:
                 ax.plot(X[i][0],X[i][1],'.g')
             else:
                 ax.plot(X[i][0],X[i][1],'.r')
@@ -87,9 +117,6 @@ def print_line():
         W1_label.config(text="W1: {:.4f}".format(w1))
         W2_label.config(text="W2: {:.4f}".format(w2))
         Theta_label.config(text="Theta: {:.4f}".format(theta))
-        Epoch_label.config(text="Num. Epoch: "+str(epoch))
-          
-        epoch+=1
 
         canvas.draw()
 
@@ -144,26 +171,21 @@ Eta_label.place(x=600, y=110)
 Eta_entry = Entry(mainwindow, textvariable=eta)
 Eta_entry.place(x=600, y=130) 
 
-Epoch_label = Label(mainwindow, text = "Num. Epoch: ")
-Epoch_label.place(x=600, y=160)
-
-Epoch_entry = Entry(mainwindow, textvariable=epoch_inter)
-Epoch_entry.place(x=600, y=180)
-
 a_label = Label(mainwindow, text = "A: ")
-a_label.place(x=600, y=210)
+a_label.place(x=600, y=160)
 
 a_entry = Entry(mainwindow, textvariable=a)
-a_entry.place(x=600, y=230)
+a_entry.place(x=600, y=180)
+
 
 start_button = Button(mainwindow, text="Go!", command=lambda:threading.Thread(target=print_line).start())
-start_button.place(x=600, y=260)
+start_button.place(x=600, y=220)
 
 start_button = Button(mainwindow, text="Clean", command=clean_screen)
-start_button.place(x=600, y=280)
+start_button.place(x=600, y=250)
 
 red_green_button = Button(mainwindow, text="Good", background="#2CA711", width=10, command=change_color)
-red_green_button.place(x=600, y=300)
+red_green_button.place(x=600, y=280)
 
 #Mostramos la interfaz
 mainwindow.mainloop()
