@@ -8,7 +8,6 @@ import threading
 X = []
 d = []
 good_or_bad = True
-func_value = 2
 
 def change_color():
     global good_or_bad
@@ -20,13 +19,12 @@ def change_color():
 
 def plot_point(event):
     ix, iy = event.xdata, event.ydata
-    print("{:.2f}".format(ix), "{:.2f}".format(iy))
     X.append((ix, iy))
     if good_or_bad:
         d.append(1)
         ax.plot(ix,iy, '.g')
     else:
-        if func_value == 0:
+        if func_value.get() == 0:
             d.append(0)
         else:
             d.append(-1)
@@ -49,15 +47,15 @@ def ActivationFunc(X):
 
     v = np.dot(X,[w1,w2])-theta
 
-    if func_value == 0:
+    if func_value.get() == 0:
         #Sigmoidal
         F_u = 1/(1+np.exp(-(float(a.get()))*v))
 
-    elif func_value == 1:
+    elif func_value.get() == 1:
         #Tangente hiperbolica
         F_u = np.tanh(v)
     
-    elif func_value == 2:
+    elif func_value.get() == 2:
         #Lineal
         F_u = float(a.get())*v
 
@@ -66,26 +64,31 @@ def ActivationFunc(X):
 def ActivationFuncDerivated(Y):
     global func_value, a
 
-    if func_value == 0:
+    if func_value.get() == 0:
         #Sigmoidal
         F_u = float(a.get())*Y*(1-Y)
 
-    elif func_value == 1:
+    elif func_value.get() == 1:
         #Tangente hiperbolica
         F_u = 1-(Y**2)
     
-    elif func_value == 2:
+    elif func_value.get() == 2:
         #Lineal
         F_u = float(a.get())
 
     return F_u
 
 def print_line():
-    global w1, w2, theta, eta, epoch_inter, X, d, a
+    global w1, w2, theta, eta, X, d, a, func_value, min_error
 
     e = [1]
+
+    diff_color = 0
+
+    if func_value.get() == 0:
+        diff_color = 0.5
     
-    while np.average(np.power(e,2)) > 0.1:
+    while np.average(np.power(e,2)) > float(min_error.get()):
         e = []
         for i in range(len(X)):
             Y = ActivationFunc(X[i])
@@ -95,8 +98,6 @@ def print_line():
             w2 = w2 + (float(eta.get())*e[-1]*y_prima*X[i][1])
             theta = theta - (float(eta.get())*e[-1]*y_prima)
 
-        print(np.average(np.power(e,2)))
-
         ax.cla()
 
         Y=[]
@@ -105,7 +106,7 @@ def print_line():
         Y = ActivationFunc(X)
         #Imprimimos los puntos en la grafica
         for i in range(len(X)):
-            if Y[i]>=0:
+            if Y[i]>=diff_color:
                 ax.plot(X[i][0],X[i][1],'.g')
             else:
                 ax.plot(X[i][0],X[i][1],'.r')
@@ -117,6 +118,7 @@ def print_line():
         W1_label.config(text="W1: {:.4f}".format(w1))
         W2_label.config(text="W2: {:.4f}".format(w2))
         Theta_label.config(text="Theta: {:.4f}".format(theta))
+        error_average_label.config(text="E.av: {:.5f}".format(np.average(np.power(e,2))))
 
         canvas.draw()
 
@@ -133,6 +135,7 @@ def clean_screen():
     W1_label.config(text="W1: {:.4f}".format(w1))
     W2_label.config(text="W2: {:.4f}".format(w2))
     Theta_label.config(text="Theta: {:.4f}".format(theta))
+    error_average_label.config(text="E.av: ")
 
     
 
@@ -150,7 +153,9 @@ w2 = random.random()
 theta = random.random()
 eta = StringVar(mainwindow, 0)
 a = StringVar(mainwindow, 0)
-epoch_inter = StringVar(mainwindow, 0)
+min_error = StringVar(mainwindow, 0)
+func_value = IntVar(mainwindow, 0)
+
 #Colocamos la grafica en la interfaz
 canvas = FigureCanvasTkAgg(fig, master = mainwindow)
 canvas.get_tk_widget().place(x=10, y=10, width=580, height=580)
@@ -165,27 +170,45 @@ W2_label.place(x=600, y=50)
 Theta_label = Label(mainwindow, text = "Theta: {:.4f}".format(theta))
 Theta_label.place(x=600, y=80) 
 
+error_average_label = Label(mainwindow, text = "E.av: ")
+error_average_label.place(x=600, y=110)
+
 Eta_label = Label(mainwindow, text = "Eta: ")
-Eta_label.place(x=600, y=110)
+Eta_label.place(x=600, y=140)
 
 Eta_entry = Entry(mainwindow, textvariable=eta)
-Eta_entry.place(x=600, y=130) 
+Eta_entry.place(x=600, y=160) 
 
 a_label = Label(mainwindow, text = "A: ")
-a_label.place(x=600, y=160)
+a_label.place(x=600, y=190)
 
 a_entry = Entry(mainwindow, textvariable=a)
-a_entry.place(x=600, y=180)
+a_entry.place(x=600, y=210)
+
+error_label = Label(mainwindow, text = "Min. Error: ")
+error_label.place(x=600, y=240)
+
+error_entry = Entry(mainwindow, textvariable=min_error)
+error_entry.place(x=600, y=260)
 
 
 start_button = Button(mainwindow, text="Go!", command=lambda:threading.Thread(target=print_line).start())
-start_button.place(x=600, y=220)
+start_button.place(x=600, y=290)
 
 start_button = Button(mainwindow, text="Clean", command=clean_screen)
-start_button.place(x=600, y=250)
+start_button.place(x=600, y=320)
 
 red_green_button = Button(mainwindow, text="Good", background="#2CA711", width=10, command=change_color)
-red_green_button.place(x=600, y=280)
+red_green_button.place(x=600, y=350)
+
+sigmoidal_rb = Radiobutton(mainwindow, text="Sigmoidal", variable=func_value, value=0)
+sigmoidal_rb.place(x=600, y=380)
+
+tangente_rb = Radiobutton(mainwindow, text="Tangente", variable=func_value, value=1)
+tangente_rb.place(x=600, y=400)
+
+Lineal_rb = Radiobutton(mainwindow, text="Lineal", variable=func_value, value=2)
+Lineal_rb.place(x=600, y=420)
 
 #Mostramos la interfaz
 mainwindow.mainloop()
